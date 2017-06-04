@@ -143,14 +143,14 @@ int main(int argc, char* argv[])
 	}
 	else if (mode == MODE_DECRYPT)
 	{
-		file = file_read(fpath_in, FILE_ENCRYPT);
+		file = file_read(fpath_in, FILE_DECRYPT);
 		if (file.data == NULL)
 		{
 			fputs("\nError trying to read the file. Check if you have access to it\n", stdout);
 			return 2;
 		}
-		k128_decrypt(password, file.length, file.data);
-		file_write(&file, fpath_out, FILE_ENCRYPT);
+		k128_decrypt(password, file.length + file.added_bytes, file.data);
+		file_write(&file, fpath_out, FILE_DECRYPT);
 	}
 	
 	file_destroy(&file);

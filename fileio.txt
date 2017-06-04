@@ -23,7 +23,12 @@ FILE_CRYPTO file_read(const char* path, FILE_MODE mode)
 
 	FILE_CRYPTO file = {.data = NULL, .length = 0, .added_bytes = 0};
 	
+	#ifdef __WIN32
 	in = fopen(path, "rb");
+	#else
+	in = fopen(path, "r");
+	#endif
+
 	if (!in)
 		return file;
 	
@@ -50,7 +55,7 @@ FILE_CRYPTO file_read(const char* path, FILE_MODE mode)
 	else /*mode == FILE_ENCRYPT*/
 	{
 		file.length = fsize;
-		file.added_bytes = (8 - (fsize % 8)) % 8;
+		file.added_bytes = fsize % 8;
 	}
 	
 	ptr = file.data;
@@ -74,7 +79,12 @@ int file_write(const FILE_CRYPTO* file, const char* path, FILE_MODE mode)
 	FILE* out;
 	size_t n, i;
 
+	#ifdef __WIN32
 	out = fopen(path, "wb");
+	#else
+	out = fopen(path, "w");
+	#endif
+
 	if (!out)
 		return 1;
 	
@@ -231,4 +241,4 @@ int main()
 	test_buffer_concistency();
 	return 0;
 }
-#endif
+#endJÄü

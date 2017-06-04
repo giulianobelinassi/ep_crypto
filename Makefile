@@ -1,5 +1,7 @@
+#CC    = /usr/local/djgpp/bin/i586-pc-msdosdjgpp-gcc # MS-DOS compiler
+#CC    = i686-w64-mingw32-gcc-win32                  # Win32 compiler
 CC     = gcc
-CFLAGS = -std=c89 -g #-O3 -flto
+CFLAGS = -std=c99 -O3 -flto
 CEXTRA = -Wall
 RM     = rm -rf
 
@@ -29,7 +31,7 @@ clean:
 test_fileio: fileio.c
 	@$(CC) $(CFLAGS) -o test $^ -DTEST_FILEIO
 	@./test
-	@$(RM) test
+	@$(RM) test *.test
 
 test_key: key.c endian.c
 	@$(CC) $(CFLAGS) -o test $^ -DTEST_KEY
