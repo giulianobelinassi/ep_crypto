@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 typedef enum {
 	MODE_ENCRYPT,
@@ -67,15 +68,15 @@ void print_usage_message()
 	fputs(
 	"ERROR: Incorrect Parameters.\n"
 	"Valid parameters are:\n"
-	"-c	           Encrypt a file.\n"
-	"-d	           Decrypt a file.\n"
-	"-1	           Run in Random 1 mode.\n"
-	"-2	           Run in Random 2 mode.\n"
+	"-c            Encrypt a file.\n"
+	"-d            Decrypt a file.\n"
+	"-1            Run in Random 1 mode.\n"
+	"-2            Run in Random 2 mode.\n"
 	"-i <file>     Input file.\n"
 	"-o <file>     Output file.\n"
 	"-p <password> Password to be used. Must have at least 8 characters,\n"
 	"              2 letters and 2 decimals.\n"
-	"-a	           Erase input file. Use with care.\n"
+	"-a            Erase input file. Use with care.\n"
 	"For more information, please consult the EP page.\n",
 	stdout
 	);
@@ -95,12 +96,17 @@ int main(int argc, char* argv[])
 	{
 		if (!strcmp(argv[i], "-i"))
 		{	if (i+1 < argc)
-				fpath_in = argv[i];
+				fpath_in = argv[i+1];
 		}
 		else if (!strcmp(argv[i], "-o"))
 		{
 			if (i+1 < argc)
-				fpath_out = argv[i];
+				fpath_out = argv[i+1];
+		}
+		else if (!strcmp(argv[i], "-p"))
+		{
+			if (i+1 < argc)
+				password = argv[i+1];
 		}
 		else if (!strcmp(argv[i], "-d"))
 			mode = MODE_DECRYPT;
@@ -148,4 +154,5 @@ int main(int argc, char* argv[])
 	}
 	
 	file_destroy(&file);
+	return 0;
 }
