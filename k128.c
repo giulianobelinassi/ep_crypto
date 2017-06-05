@@ -160,7 +160,7 @@ void k128_d_one_round(uint8_t subkeys_bytes[2][8], uint8_t data[])
 	k128_d_first_step(subkeys_bytes[0], data);
 }
 
-void k128_encrypt(const char* password, size_t data_length, uint8_t data[]) 
+uint8_t* k128_encrypt(const char* password, size_t data_length, uint8_t data[]) 
 {
 	uint64_t* subkeys = key_generate(password);
 	uint8_t subkey_bytes[2][8];
@@ -186,9 +186,10 @@ void k128_encrypt(const char* password, size_t data_length, uint8_t data[])
 		k128_e_first_step(subkey_bytes[0], data + 8*i); /*Final Transformation*/
 		cbc_feed = data + 8*i;
 	}
+	return data;
 }
 
-void k128_decrypt(const char* password, size_t data_length, uint8_t data[])
+uint8_t* k128_decrypt(const char* password, size_t data_length, uint8_t data[])
 {
 	uint64_t* subkeys = key_generate(password);
 	uint8_t subkey_bytes[2][8];
@@ -215,6 +216,7 @@ void k128_decrypt(const char* password, size_t data_length, uint8_t data[])
 				data[8*i + r] = data[8*i + r] ^ 0xff;
 		}
 	}
+	return data;
 }
 
 #ifdef TEST_K128
