@@ -1,5 +1,6 @@
 #include "fileio.h"
 #include "k128.h"
+#include "metrics.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -152,7 +153,21 @@ int main(int argc, char* argv[])
 		k128_decrypt(password, file.length + file.added_bytes, file.data);
 		file_write(&file, fpath_out, FILE_DECRYPT);
 	}
-	
+	else if (mode == MODE_1)
+	{
+		file = file_read(fpath_in, FILE_ENCRYPT);
+		if (file.data == NULL)
+		{
+			fputs("\nError trying to read the file. Check if you have access to it\n", stdout);
+			return 2;
+		}
+		metrics_calculate_1(password, file.length + file.added_bytes, file.data);
+	}
+	else if (mode == MODE_2)
+	{
+		/*TODO*/	
+	}
+
 	file_destroy(&file);
 	return 0;
 }
