@@ -25,12 +25,10 @@ uint8_t* metrics_generate_modified_data(size_t data_length, uint8_t data[], size
 	for (i = 0; i < data_length; ++i)
 		modified_data[i] = data[i];
 
-	for (i = 0; i < n; ++i)
-	{
-		byte = to_toggle/8;
-		bit = to_toggle % 8;
-		modified_data[8*i + byte] = TOGGLE_BIT(modified_data[8*i + byte], bit);
-	}
+	byte = to_toggle/8;
+	bit = to_toggle % 8;
+	modified_data[byte] = TOGGLE_BIT(modified_data[byte], bit);
+	
 	return modified_data;
 }
 
@@ -60,7 +58,7 @@ void print_table(size_t n, int ham_max[], int ham_min[], uint64_t sum_ham[])
 	
 	fputs("\nMean of Values : ", stdout);
 	for (i = 0; i < n; ++i)
-		fprintf(stdout, "%lu ", (sum_ham[i]/(64*i)));
+		fprintf(stdout, "%lu ", (sum_ham[i]/(64*(i+1))));
 	
 }
 

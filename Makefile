@@ -56,5 +56,5 @@ test_metrics: metrics.c endian.c key.c k128.c
 	@./test
 	@$(RM) test
 
-tests: test_fileio test_key test_endian test_k128
+tests: test_fileio test_key test_endian test_k128 test_metrics
 	
