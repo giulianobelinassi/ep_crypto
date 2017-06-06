@@ -4,10 +4,10 @@
 #include <stdio.h>
 
 /*Evil hack. Trick the preprocessor to include a table from those files.*/
-const uint8_t const lookup_exp[256] = { 
+const uint8_t lookup_exp[256] = { 
 	#include "lookup_exp.dat"
 };
-const uint8_t const lookup_log[256] = {
+const uint8_t lookup_log[256] = {
 	#include "lookup_log.dat"
 };
 
@@ -164,7 +164,7 @@ uint8_t* k128_encrypt(const char* password, size_t data_length, uint8_t data[])
 {
 	uint64_t* subkeys = key_generate(password);
 	uint8_t subkey_bytes[2][8];
-	const uint8_t const cbc_init[8] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+	const uint8_t cbc_init[8] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 	const uint8_t* cbc_feed = cbc_init;
 	int r;
 	int i;

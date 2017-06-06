@@ -14,8 +14,6 @@ typedef enum {
 	MODE_INVALID
 } MODE;
 
-static int delete_source = 0;
-
 int check_password(const char* password)
 {
 	int digits = 0, alphas = 0;
@@ -67,20 +65,26 @@ int check_args(const char* fpath_in, const char* fpath_out, MODE mode)
 void print_usage_message()
 {
 	fputs(
-	"ERROR: Incorrect Parameters.\n"
+	"\nERROR: Incorrect Parameters.\n"
 	"Valid parameters are:\n"
 	"-c            Encrypt a file.\n"
 	"-d            Decrypt a file.\n"
-	"-1            Run in Random 1 mode.\n"
-	"-2            Run in Random 2 mode.\n"
+	"-1            Display metrics with single toggle mode.\n"
+	"-2            Display metrics with double toggle mode.\n"
 	"-i <file>     Input file.\n"
 	"-o <file>     Output file.\n"
 	"-p <password> Password to be used. Must have at least 8 characters,\n"
 	"              2 letters and 2 decimals.\n"
 	"-a            Erase input file. Use with care.\n"
-	"For more information, please consult the EP page.\n",
+	"For more information, please consult the EP page.\n\n",
 	stdout
 	);
+}
+
+void assert_remove(int a)
+{
+	if (a != 0)
+		fputs("\nWARNING: Unable to remove input file.\n", stdout);
 }
 
 int main(int argc, char* argv[])
@@ -89,6 +93,7 @@ int main(int argc, char* argv[])
 	const char* fpath_in = NULL;
 	const char* fpath_out = NULL;
 	MODE mode = MODE_INVALID;
+	int delete_input = 0;
 
 	FILE_CRYPTO file;
 
@@ -117,6 +122,8 @@ int main(int argc, char* argv[])
 			mode = MODE_1;
 		else if (!strcmp(argv[i], "-2"))
 			mode = MODE_2;
+		else if (!strcmp(argv[i], "-a"))
+			delete_input = 1;
 	}
 	if (!check_password(password))
 	{
@@ -136,9 +143,12 @@ int main(int argc, char* argv[])
 		file = file_read(fpath_in, FILE_ENCRYPT);
 		if (file.data == NULL)
 		{
+			file_destroy(&file);
 			fputs("\nError trying to read the file. Check if you have access to it\n", stdout);
 			return 2;
 		}
+		if (delete_input)
+			assert_remove(remove(fpath_in));
 		k128_encrypt(password, file.length + file.added_bytes, file.data);
 		file_write(&file, fpath_out, FILE_ENCRYPT);
 	}
@@ -147,25 +157,28 @@ int main(int argc, char* argv[])
 		file = file_read(fpath_in, FILE_DECRYPT);
 		if (file.data == NULL)
 		{
+			file_destroy(&file);
 			fputs("\nError trying to read the file. Check if you have access to it\n", stdout);
 			return 2;
 		}
+		if (delete_input)
+			assert_remove(remove(fpath_in));
 		k128_decrypt(password, file.length + file.added_bytes, file.data);
 		file_write(&file, fpath_out, FILE_DECRYPT);
 	}
-	else if (mode == MODE_1)
+	else if (mode == MODE_1 || mode == MODE_2)
 	{
+		METRICS_MODE mode_m = (mode == MODE_1)? METRICS_SINGLE_TOGGLE: METRICS_DOUBLE_TOGGLE;
 		file = file_read(fpath_in, FILE_ENCRYPT);
 		if (file.data == NULL)
 		{
+			file_destroy(&file);
 			fputs("\nError trying to read the file. Check if you have access to it\n", stdout);
 			return 2;
 		}
-		metrics_calculate_1(password, file.length + file.added_bytes, file.data);
-	}
-	else if (mode == MODE_2)
-	{
-		/*TODO*/	
+		if (delete_input)
+			assert_remove(remove(fpath_in));
+		metrics_calculate(password, file.length + file.added_bytes, file.data, mode_m);
 	}
 
 	file_destroy(&file);
